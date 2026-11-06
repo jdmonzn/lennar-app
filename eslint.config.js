@@ -56,6 +56,7 @@ export default tseslint.config(
       ],
       '@typescript-eslint/consistent-type-definitions': 'off',
       '@typescript-eslint/array-type': ['error', { default: 'generic' }],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-restricted-exports': [
         'error',
         {

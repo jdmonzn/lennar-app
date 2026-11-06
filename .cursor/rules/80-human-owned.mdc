@@ -17,7 +17,7 @@ The author must explain and defend these modules at an onsite interview, so he w
 | `src/shared/hooks/useFocusTrap.ts` | `useFocusTrap(containerRef: RefObject<HTMLElement \| null>, isActive: boolean, returnFocusRef?: RefObject<HTMLElement \| null>): void` |
 | `src/shared/hooks/useScrollLock.ts` | `useScrollLock(isLocked: boolean): void` |
 | `src/shared/hooks/useMediaQuery.ts` | `useMediaQuery(query: string): boolean` (via `useSyncExternalStore`) |
-| `src/features/signup/useSignupForm.ts` | `useSignupForm(service: SignupService): Readonly<{ email: string; fieldError: EmailValidationError \| null; status: SignupFormStatus; handleEmailChange: (value: string) => void; handleEmailBlur: () => void; handleSubmit: (event: FormEvent<HTMLFormElement>) => void }>` |
+| `src/features/signup/useSignupForm.ts` | `useSignupForm(service: SignupService): Readonly<{ email: string; fieldError: EmailValidationError \| null; status: SignupFormStatus; handleEmailChange: (value: string) => void; handleEmailBlur: () => void; handleSubmit: (event: SubmitEvent<HTMLFormElement>) => void }>` (React's `SubmitEvent`; `FormEvent` is deprecated in `@types/react` 19.3) |
 | `src/infrastructure/graphql/graphqlRequest.ts` | `graphqlRequest<TData>(options: GraphQLRequestOptions, isData: (data: unknown) => data is TData): Promise<Result<TData, GraphQLRequestError>>` |
 | `src/infrastructure/graphql/GraphQLSignupService.ts` | `class GraphQLSignupService implements SignupService` — `createUser` mutation; derives `name`/`username` from the email's local part |
 
