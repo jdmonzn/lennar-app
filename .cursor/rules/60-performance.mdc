@@ -27,7 +27,7 @@ Lighthouse 100 in Performance, Accessibility, Best Practices and SEO, on mobile 
 # Bundle
 
 - Single view: no route-level code splitting or `React.lazy`.
-- Keep production JS under ~60KB gzip. Check the `vite build` output after adding anything.
+- Keep production JS under ~100KB gzip. Check the `vite build` output after adding anything.
 
 # index.html / SEO
 
