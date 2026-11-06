@@ -1,0 +1,22 @@
+---
+description: Commit conventions and README requirements
+alwaysApply: false
+---
+
+# Commits
+
+- Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `chore:`, `docs:`, `style:`.
+- One logical change per commit. The history should tell the story of the build.
+- Propose the message; commit only when asked. Never push.
+
+# README.md (write at the end, keep it scannable)
+
+1. Overview: what it is, with screenshots at mobile and desktop.
+2. Getting started: Node version, `npm install`, `npm run dev`, `npm run check`.
+3. Architecture: folder map, dependency direction, why lightweight DDD (`EmailAddress` value object, `SignupService` port with mock and GraphQL adapters), why no UI library.
+4. Key decisions and tradeoffs: Tailwind v4 with exact hex tokens, always-mounted drawer + `inert`, plain `fetch` over Apollo, CSP only in production builds.
+5. Accessibility and performance: what was done, plus Lighthouse scores.
+6. Security: XSS stance, validation, CSP; note that a real backend must revalidate.
+7. GraphQL bonus: the mutation, the error mapping, and how to swap adapters.
+8. How AI was used: Cursor generated scaffold, styling and tests from written rules; the author designed the architecture and wrote the behavior hooks, domain and GraphQL layer.
+9. What I'd do with more time.

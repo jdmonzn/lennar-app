@@ -1,0 +1,48 @@
+---
+description: Tailwind v4 styling rules, design tokens and breakpoint mapping
+globs: **/*.tsx,**/*.css
+alwaysApply: false
+---
+
+# Tailwind only
+
+- Style with Tailwind utility classes. No inline `style`, CSS modules, CSS-in-JS, or extra `.css` files beyond `src/styles/index.css`.
+- Mobile-first: base classes are the 376px mobile design; layer up with `md:`, `lg:`, `xl:`.
+- Arbitrary values (`w-[425px]`) only for one-off spec dimensions. Anything used twice becomes a `@theme` token.
+- Combine classes with the local `cn` helper in `src/shared/lib/cn.ts`. Do not add `clsx`, `tailwind-merge` or `cva`.
+
+# Tokens (`src/styles/index.css`, `@theme`)
+
+Tailwind v4's default palette uses OKLCH values that do NOT exactly match the spec. Override every color used with the exact hex values:
+
+```css
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-gray-900: #111827;
+  --color-gray-700: #374151;
+  --color-gray-600: #4b5563;
+  --color-gray-500: #6b7280;
+  --color-gray-400: #9ca3af;
+  --color-gray-300: #d1d5db;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-indigo-600: #4f46e5;
+}
+```
+
+# Breakpoints (Tailwind v4 defaults)
+
+| Spec frame | Width | Tailwind | Layout |
+|---|---|---|---|
+| Mobile | 376px | base | single column, stacked form, hamburger menu, illustration below content |
+| Tablet | 834px | `md:` (≥768) | two columns, full horizontal nav, container flush to edges |
+| Laptop | 1080px | `lg:` (≥1024) | two columns of 492px, horizontal form, centered container |
+| Desktop | 1358px | `xl:` (≥1280) | inner container max 1280px, 39px side padding, two columns of 592px |
+
+- The layout must also look correct between frames, not only at the exact frame widths.
+- Verify at 376, 834, 1080 and 1358 against Figma before calling any UI task done.
+
+# Fidelity
+
+- Every spacing, size, radius, shadow and type value comes from @docs/design-spec.md. Do not round or approximate.
+- The illustration container uses `overflow: clip` and scales with its column width.

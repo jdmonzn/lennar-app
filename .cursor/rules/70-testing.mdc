@@ -1,0 +1,19 @@
+---
+description: Testing conventions — agent-owned *.test files vs human-owned *.spec acceptance files
+globs: **/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx
+alwaysApply: false
+---
+
+# Ownership by file name
+
+- `*.test.ts(x)`: agent-owned tests for agent-written code. They must pass in `npm run check:agent`.
+- `*.spec.ts(x)`: acceptance specs for human-owned modules. The agent writes each one once, next to its stub, describing the required behavior. They fail until the human implements the module. That is expected: never "fix" them by editing the spec or implementing the module. Change a spec only when explicitly asked.
+
+# How to test
+
+- Test behavior the user sees: query by role, label and text with Testing Library. No snapshot tests, no tests of internal state or implementation details.
+- Use `user-event` for interactions, and fake timers for animation and timeout timing.
+- Domain tests are table-driven (`it.each`) and cover valid, invalid and edge inputs.
+- Hooks are tested through `renderHook` or a tiny test component.
+- The GraphQL adapter is tested with a stubbed `fetch` (`vi.stubGlobal`): success, HTTP error, network failure, GraphQL `errors`, malformed body, timeout.
+- Each test reads as a sentence: `it('closes the menu when the overlay is clicked')`.

@@ -1,0 +1,48 @@
+---
+description: Files the human author implements himself — the agent writes only typed stubs and acceptance specs
+alwaysApply: true
+---
+
+# Why
+
+The author must explain and defend these modules at an onsite interview, so he writes them himself. The agent prepares the contract and the tests; the human writes the implementation.
+
+# Human-owned files
+
+| File | Contract |
+|---|---|
+| `src/domain/signup/EmailAddress.ts` | `class EmailAddress` — private constructor; `static create(raw: string): Result<EmailAddress, EmailValidationError>`; `get value(): string`; `equals(other: EmailAddress): boolean`. `EmailValidationError = 'empty' \| 'tooLong' \| 'invalidFormat'` |
+| `src/shared/hooks/useDisclosure.ts` | `useDisclosure(initialOpen?: boolean): Readonly<{ isOpen: boolean; open: () => void; close: () => void; toggle: () => void }>` |
+| `src/shared/hooks/useEscapeKey.ts` | `useEscapeKey(onEscape: () => void, isActive: boolean): void` |
+| `src/shared/hooks/useFocusTrap.ts` | `useFocusTrap(containerRef: RefObject<HTMLElement \| null>, isActive: boolean, returnFocusRef?: RefObject<HTMLElement \| null>): void` |
+| `src/shared/hooks/useScrollLock.ts` | `useScrollLock(isLocked: boolean): void` |
+| `src/shared/hooks/useMediaQuery.ts` | `useMediaQuery(query: string): boolean` (via `useSyncExternalStore`) |
+| `src/features/signup/useSignupForm.ts` | `useSignupForm(service: SignupService): Readonly<{ email: string; fieldError: EmailValidationError \| null; status: SignupFormStatus; handleEmailChange: (value: string) => void; handleEmailBlur: () => void; handleSubmit: (event: FormEvent<HTMLFormElement>) => void }>` |
+| `src/infrastructure/graphql/graphqlRequest.ts` | `graphqlRequest<TData>(options: GraphQLRequestOptions, isData: (data: unknown) => data is TData): Promise<Result<TData, GraphQLRequestError>>` |
+| `src/infrastructure/graphql/GraphQLSignupService.ts` | `class GraphQLSignupService implements SignupService` — `createUser` mutation; derives `name`/`username` from the email's local part |
+
+# Agent-written contract types (agent may implement these fully)
+
+- `src/shared/lib/result.ts`: `type Result<T, E> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: E }` plus `ok()` / `err()` helpers.
+- `src/domain/signup/SignupService.ts`: `interface SignupService { signUp(email: EmailAddress, signal?: AbortSignal): Promise<Result<SignupConfirmation, SignupError>> }`
+- `src/domain/signup/signupTypes.ts`: `SignupConfirmation = Readonly<{ id: string; email: string }>`; `SignupError = { kind: 'network' } | { kind: 'timeout' } | { kind: 'server' } | { kind: 'invalidResponse' }`; `SignupFormStatus = { status: 'idle' } | { status: 'submitting' } | { status: 'success'; confirmation: SignupConfirmation } | { status: 'error'; error: SignupError }`
+- `GraphQLRequestOptions`, `GraphQLRequestError` types, defined next to `graphqlRequest.ts` in a separate `graphqlTypes.ts`.
+- `src/infrastructure/mock/MockSignupService.ts`: a fully working fake with an ~800ms delay, used until the GraphQL bonus is done.
+
+# What the agent does for each human-owned file
+
+1. Creates the file with the exact exported signature from the table, a JSDoc summary, and a body that is only:
+   `throw new Error('Not implemented: <name> (human-owned)');`
+   For classes, every method body is that line.
+2. Creates a sibling `<name>.spec.ts(x)` with thorough behavioral acceptance tests.
+3. Wires the stub into consuming components so that, once implemented, everything works without further agent changes.
+
+# What the agent must never do
+
+- Implement, partially implement, or "scaffold logic" inside a human-owned file.
+- Replace a human implementation, refactor it, or "fix" it unprompted.
+- Edit a `*.spec.*` file to make it pass.
+
+# Review mode
+
+When the author asks for a review of a human-owned file: point out bugs, edge cases, spec failures and type issues with hints and reasoning. Do not paste a full solution unless he explicitly asks for one.

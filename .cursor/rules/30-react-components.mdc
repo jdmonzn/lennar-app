@@ -1,0 +1,44 @@
+---
+description: React component conventions, base UI primitive APIs, accessibility and mobile menu behavior
+globs: src/**/*.tsx
+alwaysApply: false
+---
+
+# Components
+
+- Function components with named exports. Props as `type XProps = Readonly<{ ... }>`.
+- React 19: pass `ref` as a normal prop; do not use `forwardRef`.
+- Local state with `useState` / `useReducer`. No global state library and no context except the service provider.
+- `useEffect` only to sync with external systems (DOM listeners, media queries, timers), always with cleanup.
+- `useMemo` / `useCallback` only for referential stability that a dependency array or a memoized child actually needs.
+- Stable keys from data ids, never array indexes.
+
+# Base UI primitive APIs (implement exactly; ask before changing)
+
+- `Button`: `variant: 'primary' | 'secondary' | 'menuCta'` (primary = indigo-500 submit, secondary = gray-600 nav, menuCta = indigo-600), `size: 'md' | 'lg'` (md = 42px nav, lg = 48px), `fullWidth?: boolean`, `isLoading?: boolean`, plus native button attributes except `className` and `style`. `type` defaults to `'button'`. While loading: `aria-busy`, disabled, label preserved.
+- `Text`: `as` restricted to a union of intrinsic tags (`'h1' | 'h2' | 'p' | 'span'`), `variant: 'display' | 'bodyLarge' | 'body' | 'nav' | 'helper' | 'badge'`. Responsive sizes live inside the variant map; callers never pass font classes.
+- `TextInput`: required `label` (`isLabelHidden?: boolean` renders it with `VisuallyHidden`), `error?: string`, native input attributes except `className`/`style`. Generates ids with `useId`; wires `aria-invalid` and `aria-describedby` to the error.
+- `Container`: max-width 1280px, centered, 39px side padding on desktop (see spec for other breakpoints).
+- Icons: each SVG from `src/assets/icons` becomes a TSX component in `src/ui/icons`, with `fill`/`stroke` replaced by `currentColor`, `aria-hidden="true"` by default, and an optional `title` that makes it labeled. Never redraw or substitute an icon.
+- Variant styling uses typed maps: `const VARIANT_CLASSES: Record<ButtonVariant, string> = { ... }`, combined with the `cn` helper.
+
+# Accessibility (part of the grade and of Lighthouse)
+
+- Landmarks: `header` > `nav`, `main`. Exactly one `h1` (the display heading).
+- Visible focus styles on every interactive element (`focus-visible:` ring).
+- Tap targets at least 40×40px; the hamburger trigger is exactly 40×40.
+- Menu trigger: `aria-expanded`, `aria-controls`, accessible label ("Open main menu" / "Close main menu").
+- Drawer: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`; when closed it is `inert` and hidden from assistive tech.
+- Form: real `<form>` with `noValidate` (custom validation), labeled input, error text with `aria-live="polite"`, success and error status announced.
+- Text and focus rings must meet WCAG AA contrast on gray-900.
+
+# Mobile menu behavior (from Figma annotations 1.1–1.3)
+
+- Open: drawer slides down from `translateY(-100%)` to `0` while opacity goes 0 → 1, `ease-in-out`, 500ms.
+- Close (close button, overlay tap, Esc): reverse — slides up, opacity 1 → 0, `ease-in-out`, 300ms.
+- Overlay: semi-transparent, full-bleed, behind the drawer; tapping it closes the menu with the same animation.
+- Keep the drawer mounted and toggle it with transform/opacity plus `inert`, so the close animation plays.
+- Under `motion-reduce`, skip the transitions.
+- While open: body scroll locked, focus trapped inside the drawer, Esc closes, and focus returns to the trigger on close.
+- The menu closes automatically when the viewport reaches the tablet breakpoint.
+- These behaviors live in human-owned hooks (`useDisclosure`, `useEscapeKey`, `useFocusTrap`, `useScrollLock`, `useMediaQuery`). Components only consume them.

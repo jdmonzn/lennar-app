@@ -1,0 +1,41 @@
+---
+description: Strict TypeScript rules — no any, no casts, no non-null assertions
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# Compiler flags (tsconfig.app.json, never relax)
+
+`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `noUnusedLocals`, `noUnusedParameters`, `noPropertyAccessFromIndexSignature`, `verbatimModuleSyntax`, `useUnknownInCatchVariables`.
+
+# Banned
+
+- `any`, explicit or implicit
+- Type assertions with `as` — including `as unknown as X` double-casting and `<X>value`. Only `as const` is allowed.
+- Non-null assertions (`value!`)
+- `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`
+- `enum` — use an `as const` object plus a derived union type
+- `Function`, `Object`, `{}` as types
+- Default exports, except where a tool requires one (`vite.config.ts`, `eslint.config.js`)
+
+# Required patterns
+
+- External data (fetch responses, `JSON.parse`, storage, events from outside React) enters as `unknown` and is narrowed with type guards or parse functions that return a `Result`.
+- Expected failures are values, not exceptions: `Result<T, E>` from `src/shared/lib/result.ts`.
+- Discriminated unions for state (`{ status: 'idle' } | { status: 'submitting' } | ...`), with exhaustive `switch` statements ending in `assertNever(value)`.
+- `type` for props, unions and data shapes; `interface` only for contracts that classes implement (for example `SignupService`).
+- `readonly` everywhere data is not meant to change: `Readonly<{...}>` props, `ReadonlyArray<T>`.
+- Explicit return types on every exported function.
+- Domain primitives are value objects, never raw strings passed around (`EmailAddress`, not `string`).
+
+# Naming
+
+- PascalCase: components, types, classes. camelCase: functions, variables, hooks (`useX`).
+- Booleans read as questions: `isOpen`, `hasError`, `shouldAnimate`.
+- Event props `onX`; internal handlers `handleX`.
+- UPPER_SNAKE_CASE only for true module-level constants.
+- No abbreviations beyond universally known ones (`id`, `url`, `ref`).
+
+# ESLint must enforce
+
+`@typescript-eslint/no-explicit-any`, `@typescript-eslint/consistent-type-assertions` (`assertionStyle: 'never'`), `@typescript-eslint/no-non-null-assertion`, `@typescript-eslint/ban-ts-comment`, `@typescript-eslint/switch-exhaustiveness-check`, `@typescript-eslint/explicit-module-boundary-types`, `@typescript-eslint/no-floating-promises`, `@typescript-eslint/no-misused-promises`, `@typescript-eslint/prefer-nullish-coalescing`, `@typescript-eslint/consistent-type-imports`, `no-restricted-exports` (`restrictDefaultExports`), `no-restricted-syntax` banning `TSEnumDeclaration`, `react-hooks/rules-of-hooks`, `react-hooks/exhaustive-deps`, and the recommended `jsx-a11y` set.

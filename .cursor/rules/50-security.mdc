@@ -1,0 +1,43 @@
+---
+description: XSS prevention, input validation, network safety and security headers
+alwaysApply: true
+---
+
+# XSS
+
+- Never use `dangerouslySetInnerHTML`, `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write`, `eval`, `new Function`, or string-based `setTimeout`.
+- All text renders through JSX. Never build HTML strings.
+- `href` values come only from typed constants in `content/`. No `javascript:` URLs. External links get `rel="noopener noreferrer"`.
+- Never render raw server or exception messages. Map errors to fixed, user-safe copy.
+
+# Form input
+
+- Validation lives in the domain (`EmailAddress.create`), not in components. Components display the result.
+- `EmailAddress` rules: trim; reject empty; max 254 chars; reject control characters and whitespace inside; one practical format regex that is linear-time (no nested quantifiers → no ReDoS).
+- Input attributes: `type="email"`, `name="email"`, `autoComplete="email"`, `inputMode="email"`, `maxLength={254}`, `spellCheck={false}`, `required`.
+- Validate on blur and on submit. Block double submits while a request is in flight.
+- Client validation is UX, not security; the README notes that a real backend must revalidate.
+
+# Network (GraphQL bonus)
+
+- Always send `{ query, variables }`. Never interpolate user input into the query string.
+- Responses are `unknown` until narrowed by a type guard. Handle the HTTP error, network error, GraphQL `errors` array, malformed body and timeout cases.
+- Timeout with `AbortController` (10s). Abort in-flight requests on unmount.
+- The endpoint comes from `import.meta.env.VITE_GRAPHQL_ENDPOINT` (typed in `src/vite-env.d.ts`), defaulting to `https://graphqlzero.almansi.me/api`. No secrets in client code; commit `.env.example`, never `.env`.
+
+# Content Security Policy
+
+Inject a CSP `<meta>` into `index.html` for production builds only, through a small inline Vite plugin using `transformIndexHtml` with `apply: 'build'` (the dev server needs inline scripts for HMR):
+
+```
+default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self';
+connect-src 'self' https://graphqlzero.almansi.me; object-src 'none'; base-uri 'self'; form-action 'self'
+```
+
+# Optional: deployment headers
+
+If deployed to Netlify, add `public/_headers` with the same CSP plus `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` and `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
+
+# Dependencies
+
+- Commit the lockfile. `npm audit` must report no high or critical issues.

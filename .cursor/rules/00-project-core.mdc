@@ -1,0 +1,49 @@
+---
+description: Project context, stack, commands, workflow and comment policy for the Lennar hero-section challenge
+alwaysApply: true
+---
+
+# Project
+
+Lennar interview code challenge: a React web app that implements a responsive hero section from Figma — navbar with mobile menu drawer + overlay, callout pill, display heading, email signup form, and illustration — across four breakpoints.
+
+- Source of truth for every visual value: @docs/design-spec.md
+- Build order and ownership split: @docs/BUILD_ORDER.md
+- Base UI components (buttons, typography, inputs) are built in-house. Never use UI libraries: no MUI, Bootstrap, Chakra, shadcn/ui, Headless UI, Radix, Mantine, Ant.
+- Reviewers will read every file and ask the author architectural questions. Write code a senior engineer can defend line by line. Prefer the boring, obvious solution.
+
+# Stack (do not change without asking)
+
+- Vite + React 19 + TypeScript (strict)
+- Tailwind CSS v4 via `@tailwindcss/vite`; design tokens in `src/styles/index.css` under `@theme`
+- Inter, self-hosted via `@fontsource-variable/inter`
+- Vitest + `@testing-library/react` + `@testing-library/user-event` + `@testing-library/jest-dom` + jsdom
+- ESLint flat config (`typescript-eslint` strictTypeChecked + stylisticTypeChecked, `eslint-plugin-react-hooks`, `eslint-plugin-jsx-a11y`) + Prettier
+- GraphQL bonus uses plain `fetch`. No Apollo, urql, graphql-request, axios.
+- Never add a dependency without asking first. When proposing one, state its gzip size and why the platform or React cannot do the job.
+
+# Scripts (create these in package.json during scaffold)
+
+- `dev`, `build`, `preview`
+- `typecheck` → `tsc -b`
+- `lint` → `eslint .` ; `format` → `prettier --write .`
+- `test` → all tests ; `test:agent` → excludes `**/*.spec.ts(x)` (human-owned acceptance specs)
+- `check` → typecheck + lint + test + build
+- `check:agent` → typecheck + lint + test:agent + build
+
+# Workflow
+
+1. Before writing code, state a short plan: files to create or change and why.
+2. Make small, focused changes — one concern at a time.
+3. After every change run `npm run check:agent`. Do not report a task as done until it is green.
+4. Never weaken a tsconfig flag, lint rule, or test to get green. Fix the code instead.
+5. Respect the human-owned boundary (see `80-human-owned.mdc`). If a task needs a human-owned module that is still a stub, stop and say which file blocks you.
+6. If the design spec is ambiguous or silent, ask. Do not invent design.
+7. Do not commit or push unless explicitly asked. Propose a commit message instead.
+
+# Comments policy
+
+- No inline or block comments that explain code. Names and structure must explain it.
+- JSDoc is required on every exported function, hook, component, class and public method: a one-line summary, plus `@param`/`@returns` only when the types don't already make it obvious.
+- No commented-out code, no TODO/FIXME (the only exception is the stub marker in human-owned files), no banner or section comments.
+- No `eslint-disable` comments of any kind.

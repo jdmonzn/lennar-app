@@ -1,0 +1,56 @@
+---
+description: Folder structure, layer boundaries, lightweight DDD scope and reusability rules
+globs: src/**
+alwaysApply: false
+---
+
+# Folder structure
+
+```
+src/
+  app/              App.tsx, main.tsx, composition root (wires concrete services)
+  content/          heroContent.ts — all user-facing copy and nav data, typed + readonly
+  domain/signup/    EmailAddress.ts, SignupService.ts (contract), signupTypes.ts
+  infrastructure/
+    graphql/        graphqlRequest.ts, GraphQLSignupService.ts
+    mock/           MockSignupService.ts
+  features/
+    navigation/     NavBar.tsx, DesktopNav.tsx, MobileMenu.tsx, MenuOverlay.tsx
+    hero/           Hero.tsx, CalloutPill.tsx, HeroIllustration.tsx
+    signup/         SignupForm.tsx, useSignupForm.ts
+  ui/               Button.tsx, Text.tsx, TextInput.tsx, Container.tsx, VisuallyHidden.tsx
+    icons/          LogoMark.tsx, MenuIcon.tsx, CloseIcon.tsx, ChevronRightIcon.tsx
+  shared/
+    hooks/          useDisclosure, useEscapeKey, useFocusTrap, useScrollLock, useMediaQuery
+    lib/            result.ts, assertNever.ts, cn.ts
+  styles/           index.css (Tailwind import + @theme tokens + @font-face)
+  assets/           raw exported SVGs (source material)
+```
+
+# Dependency direction (enforce with `no-restricted-imports` per folder)
+
+- `domain/` imports nothing from React, `features/`, `ui/`, or `infrastructure/`. Pure TypeScript.
+- `infrastructure/` implements `domain/` contracts. It never imports React or UI.
+- `features/` depend on `domain/` contracts, `ui/`, `shared/` and `content/` — never on concrete `infrastructure/` classes.
+- `ui/` knows nothing about features or domain. Pure presentational primitives.
+- `app/` is the only place that instantiates concrete services and injects them (through a `SignupServiceProvider` context or props).
+
+# Lightweight DDD — scope is deliberate
+
+- The only real domain is the email signup. Model it with:
+  - `EmailAddress` value object: class with a private constructor, `static create(raw: string): Result<EmailAddress, EmailValidationError>`, a `value` getter and `equals()`. Invalid instances cannot exist.
+  - `SignupService` interface: the port. `MockSignupService` and `GraphQLSignupService` are adapters.
+- Do NOT add repositories, aggregates, domain events, use-case classes, DI containers, or extra layers. A landing page padded with ceremony counts against the author.
+- OOP is limited to the value object and the service adapters. Components and hooks are functions.
+
+# Reusability
+
+- Extract a component when it is used twice or when the Figma Symbols page defines it: Nav link, Nav button link, Menu trigger, Mobile menu link, Mobile menu close button, Submit button, Text input.
+- No speculative abstraction, no "just in case" props.
+- All copy and nav items come from `content/heroContent.ts` and are passed in as props. Components never hard-code user-facing strings.
+
+# Files
+
+- One component per file, named export, file name matches the export.
+- Keep files short (aim for under 150 lines); split by responsibility when they grow.
+- Colocate tests next to the file they test.
