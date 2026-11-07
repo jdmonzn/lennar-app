@@ -8,31 +8,28 @@ export class EmailAddress {
   private static readonly MAX_LENGTH = 254;
   private static readonly EMAIL_ADDRESS_PATTERN =
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  private rawValue: string;
+  private readonly normalizedValue: string;
 
-  private constructor(raw: string) {
-    this.rawValue = raw;
+  private constructor(normalizedValue: string) {
+    this.normalizedValue = normalizedValue;
   }
 
   /** Trims and validates raw user input; never throws for any string. */
   static create(raw: string): Result<EmailAddress, EmailValidationError> {
-    const sanitizedRaw = raw.trim();
-    if (sanitizedRaw.length === 0) return err('empty');
-    if (sanitizedRaw.length > this.MAX_LENGTH) return err('tooLong');
-    if (!this.EMAIL_ADDRESS_PATTERN.test(sanitizedRaw)) return err('invalidFormat');
-    return ok(new EmailAddress(raw));
+    const trimmed = raw.trim();
+    if (trimmed.length === 0) return err('empty');
+    if (trimmed.length > EmailAddress.MAX_LENGTH) return err('tooLong');
+    if (!EmailAddress.EMAIL_ADDRESS_PATTERN.test(trimmed)) return err('invalidFormat');
+    return ok(new EmailAddress(trimmed));
   }
 
   /** The normalized address. */
   get value(): string {
-    return this.rawValue.trim();
+    return this.normalizedValue;
   }
 
   /** Value equality: two addresses are equal when their normalized values match. */
   equals(other: EmailAddress): boolean {
-    const normalizedValue = this.value.trim();
-    const otherNormalizedValue = other.value.trim();
-    console.log(normalizedValue, otherNormalizedValue);
-    return normalizedValue === otherNormalizedValue;
+    return this.normalizedValue === other.normalizedValue;
   }
 }
