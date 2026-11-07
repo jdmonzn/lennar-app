@@ -1,5 +1,5 @@
-import type { SubmitEvent } from 'react';
-import type { EmailValidationError } from '../../domain/signup/EmailAddress';
+import { useEffect, useState, type SubmitEvent } from 'react';
+import { EmailAddress, type EmailValidationError } from '../../domain/signup/EmailAddress';
 import type { SignupService } from '../../domain/signup/SignupService';
 import type { SignupFormStatus } from '../../domain/signup/signupTypes';
 
@@ -17,6 +17,62 @@ export type SignupForm = Readonly<{
  * Drives the email signup form: validates on blur and submit through `EmailAddress`,
  * blocks double submits, and aborts an in-flight request on unmount.
  */
-export function useSignupForm(_service: SignupService): SignupForm {
-  throw new Error('Not implemented: useSignupForm (human-owned)');
+export function useSignupForm(service: SignupService): SignupForm {
+  const [email, setEmail] = useState('');
+  const [fieldError, setFieldError] = useState<EmailValidationError | null>(null);
+  const [status, setStatus] = useState<SignupFormStatus>({ status: 'idle' });
+  const [controller, setController] = useState<AbortController | null>(null);
+
+  useEffect(
+    () => () => {
+      controller?.abort();
+    },
+    [controller],
+  );
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    setFieldError(null);
+  };
+  const handleEmailBlur = () => {
+    const emailResult = EmailAddress.create(email);
+    setFieldError(emailResult.ok ? null : emailResult.error);
+  };
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (status.status === 'submitting') return;
+
+    const emailResult = EmailAddress.create(email);
+    if (!emailResult.ok) {
+      setFieldError(emailResult.error);
+      return;
+    }
+
+    const requestController = new AbortController();
+    setController(requestController);
+    setStatus({ status: 'submitting' });
+
+    service
+      .signUp(emailResult.value, requestController.signal)
+      .then((result) => {
+        if (requestController.signal.aborted) return;
+        if (result.ok) {
+          setStatus({ status: 'success', confirmation: result.value });
+        } else {
+          setStatus({ status: 'error', error: result.error });
+        }
+      })
+      .catch(() => {
+        if (requestController.signal.aborted) return;
+        setStatus({ status: 'error', error: { kind: 'network' } });
+      });
+  };
+  return {
+    email,
+    fieldError,
+    status,
+    handleEmailChange,
+    handleEmailBlur,
+    handleSubmit,
+  };
 }
