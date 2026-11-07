@@ -45,7 +45,7 @@ Letter spacing values are **percent of font size** (Figma %), not px. -2.5% = `-
 
 - Total height 66px; container top padding 24px
 - Logo: 43.75 × 40px desktop, 35 × 32px mobile; on mobile, 16px from the left edge
-- Gap between nav links: 32px
+- Gap between nav links: 32px; gap logo → first nav link: **40px** (verified, "Leading content" gap)
 - Trailing group ("Log in" link + "Start free trial" button), gap 24px
 - Nav button: background gray-600, padding 9px 17px, radius 6px, height 42px, text white 16px/500
 - Mobile: hamburger trigger with a 40 × 40px tap target, right-aligned (320px from left in the 376 frame)
@@ -63,12 +63,24 @@ Letter spacing values are **percent of font size** (Figma %), not px. -2.5% = `-
   - Check: laptop 32 + 492 + 32 + 492 + 32 = 1080; desktop 32 + 592 + 32 + 592 + 32 = 1280.
 - Main section padding: top 32px, bottom 56px (tablet, laptop, desktop).
 
+## Vertical spacing (verified in Figma, per breakpoint)
+
+| Spacing | Mobile | Tablet / Laptop / Desktop (md+) |
+|---|---|---|
+| Navbar → hero content | 40px (mobile container gap) | Main section `pt-8` (32px) |
+| Content column padding | none (16px left/right) | **96px top and bottom** (`py-24`) on all three |
+| Callout → heading | **16px** | 24px |
+| Heading → body | **12px** | 20px |
+| Body → form | **40px** | 48px |
+| Content → illustration | **48px** (stacked) | side by side, 32px column gap |
+| Main section bottom | (not specified) | 56px (`pb-14`) |
+
 ## Callout pill
 
 - Background #000000, radius 14px, padding 4px 8px 4px 4px
 - Inner badge: background indigo-500, radius 10px, padding 2px 12px, uppercase 12px/500/+2.5 tracking
 - Badge → text gap 16px
-- Text link 14px/400 followed by a 20 × 20 chevron-right icon
+- Text link "Visit our careers page": white 14px/400/20px, then a 20 × 20 chevron-right icon in gray-500 (#6B7280); 8px gap between text and chevron (verified)
 
 ## Form
 
@@ -88,7 +100,15 @@ Letter spacing values are **percent of font size** (Figma %), not px. -2.5% = `-
 ## Mobile menu drawer
 
 - White background, radius 8px, padding 8px, md shadow
-- Header 56px tall, 20px padding (logo + close button)
+- Layout verified in Figma (adds up to 408px total):
+  - Outer wrapper: 8px padding on all sides (376 wide → 360px panel)
+  - Panel: 360px wide, white, radius 8px, `ring-1 ring-black/5` + large shadow
+  - Header: 56px tall, padding 16px top / 20px left-right, logo and close button with `justify-between`
+  - Content: padding 20px top / 24px bottom, **24px gap** between three blocks: links → CTA → footer
+  - Links block: 8px left/right padding, 4px gap between links (4 × 40px + 3 × 4px = 172px)
+  - CTA block: 20px left/right padding (→ 320px button)
+  - Footer row "Existing customer? Login": 20px left/right padding, centered, 4px gap, 24px tall. Both 16px/500/24px; "Existing customer?" gray-500 (#6B7280), "Login" link gray-900 (#111827) (verified)
+  - Check: 56 + 20 + 172 + 24 + 48 + 24 + 24 + 24 = 392 panel + 16 wrapper = 408
 - Nav links 40px tall, padding 8px 12px, text gray-700 16px/400
 - CTA "Start free trial" (verified): indigo-600, 48px tall, full width (320px), radius 6px, padding 12px 16px, `shadow-sm` (0 1px 2px rgba(0,0,0,.05)), text white 16px/500
 - Footer row: "Existing customer? Login"

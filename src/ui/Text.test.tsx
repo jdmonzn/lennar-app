@@ -53,7 +53,7 @@ describe('Text', () => {
     ['bodyLarge', ['text-base', 'md:text-lg', 'lg:text-xl', 'xl:text-2xl/7', 'text-gray-300']],
     ['body', ['text-base']],
     ['nav', ['text-base', 'font-medium']],
-    ['helper', ['text-sm', 'text-gray-300']],
+    ['helper', ['text-sm']],
     ['badge', ['text-xs/5', 'font-medium', 'tracking-wide', 'uppercase']],
   ])('applies the %s typography', (variant, classes) => {
     render(

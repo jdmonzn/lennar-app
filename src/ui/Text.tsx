@@ -18,13 +18,13 @@ const VARIANT_CLASSES: Record<TextVariant, string> = {
   bodyLarge: 'text-base text-gray-300 md:text-lg lg:text-xl xl:text-2xl/7',
   body: 'text-base',
   nav: 'text-base font-medium',
-  helper: 'text-sm text-gray-300',
+  helper: 'text-sm',
   badge: 'text-xs/5 font-medium tracking-wide uppercase',
 };
 
 /**
- * Typography primitive. Variants carry the responsive size, weight and tracking; `display`,
- * `bodyLarge` and `helper` also carry their single spec color, the others inherit color from context.
+ * Typography primitive. Variants carry the responsive size, weight and tracking; `display` and
+ * `bodyLarge` also carry their single spec color, the others inherit color from context.
  */
 export function Text({ as: Element, variant, children }: TextProps): ReactElement {
   return <Element className={VARIANT_CLASSES[variant]}>{children}</Element>;
