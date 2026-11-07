@@ -29,17 +29,17 @@ All four breakpoint frames share identical component structure and copy. Only wi
 | white | #FFFFFF | Nav links, heading, input background |
 | black | #000000 | Callout pill background |
 
-## Typography (all Inter)
+## Typography (all Inter) — verified in Figma Inspect
 
-| Role | Desktop | Mobile |
-|---|---|---|
-| Display heading | 800 · 72px / 72px | 800 · 36px / 40px · tracking -2.5 |
-| Supporting body | 400 · 24px / 28px | 400 · 16px / 24px |
-| Nav link · button text | 500 · 16px / 24px | same |
-| Helper · legal copy | 400 · 14px / 20px | same |
-| Badge ("We're hiring") | 500 · 12px / 20px · tracking 2.5px · uppercase | same |
+Letter spacing values are **percent of font size** (Figma %), not px. -2.5% = `-0.025em`, -4% = `-0.04em`, 2.5% = `0.025em`.
 
-Tablet and laptop heading sizes: read them from the Figma frames (Inspect panel); do not interpolate.
+| Role | Mobile (376) | Tablet (834) | Laptop (1080) | Desktop (1358) |
+|---|---|---|---|---|
+| Display heading (800) | 36px / 40px · -2.5% | 48px / 48px · -4% | 60px / 60px · -2.5% | 72px / 72px · 0% |
+| Supporting body (400) | 16px / 24px | 18px / 28px | 20px / 28px | 24px / 28px |
+| Nav link · button text | 500 · 16px / 24px | same | same | same |
+| Helper · legal copy | 400 · 14px / 20px | same | same | same |
+| Badge ("We're hiring") | 500 · 12px / 20px · +2.5% · uppercase | same | same | same |
 
 ## Navbar
 
@@ -56,7 +56,12 @@ Tablet and laptop heading sizes: read them from the Figma frames (Inspect panel)
 - Content top offset (callout) 96px
 - Gaps: callout → heading 24px · heading → body 20px · body → form 48px
 - Illustration height 624px; container uses `overflow: clip`; scales with its column width
-- Container side padding 39px (desktop); mobile side margin 16px
+- Container (verified in Figma): `max-width: 1280px`, centered, full width below that.
+  - Mobile: 16px side padding.
+  - Tablet, laptop, desktop: **32px** left/right padding, **32px** gap between content and illustration columns.
+  - The "39px" on desktop is NOT padding: it is the leftover margin at the 1358px frame ((1358 − 1280) / 2). It comes from `mx-auto`.
+  - Check: laptop 32 + 492 + 32 + 492 + 32 = 1080; desktop 32 + 592 + 32 + 592 + 32 = 1280.
+- Main section padding: top 32px, bottom 56px (tablet, laptop, desktop).
 
 ## Callout pill
 
@@ -85,15 +90,29 @@ Tablet and laptop heading sizes: read them from the Figma frames (Inspect panel)
 - White background, radius 8px, padding 8px, md shadow
 - Header 56px tall, 20px padding (logo + close button)
 - Nav links 40px tall, padding 8px 12px, text gray-700 16px/400
-- CTA "Start free trial": indigo-600, 48px tall, full width
+- CTA "Start free trial" (verified): indigo-600, 48px tall, full width (320px), radius 6px, padding 12px 16px, `shadow-sm` (0 1px 2px rgba(0,0,0,.05)), text white 16px/500
 - Footer row: "Existing customer? Login"
 - Slides from the top: -408px → 0
+
+## Interactive states (verified in Figma Symbols page)
+
+| Component | Default | Hover | Focus |
+|---|---|---|---|
+| Submit button (indigo-500) | bg indigo-500, shadow base | bg **indigo-600** (#4F46E5) | bg indigo-500 + **2px ring indigo-300 (#A5B4FC) with 2px offset gray-900** (`ring-2 ring-indigo-300 ring-offset-2 ring-offset-gray-900`) |
+| Nav button (gray-600) | bg gray-600 | bg **gray-700** (#374151) | same as default in Figma → use the shared focus ring |
+| Mobile CTA (indigo-600) | bg indigo-600, shadow-sm | bg **indigo-700** (#4338CA), shadow-sm | same as default in Figma → use the shared focus ring |
+| Nav link (white text) | text white | text **gray-300** (#D1D5DB) | use the shared focus ring |
+| Text input | white bg, no border | white bg (no change) | white bg + the same 2px indigo-300 ring with 2px offset |
+
+- Shared focus style for every interactive element: `focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900` (on the white mobile drawer, offset color is white).
+- Disabled / loading (not in Figma): `disabled:cursor-not-allowed disabled:opacity-75`, keep the default background, no hover change while disabled.
+- Hover/focus for mobile menu link, close button and menu trigger exist in Figma Symbols but were not transcribed: ask before inventing values.
 
 ## Interaction annotations (Figma)
 
 - **1.1 Menu:** the hamburger opens the menu, which slides down into view while opacity goes 0 → 1, ease-in-out, 500ms.
 - **1.2 Close:** the close button slides the menu up and out while opacity goes 1 → 0, ease-in-out, 300ms.
-- **1.3 Overlay:** tapping anywhere on the overlay outside the menu closes it with the same animation as the close button. Overlay is semi-transparent and full-bleed (node 1:321); read its exact color and opacity from Figma.
+- **1.3 Overlay:** tapping anywhere on the overlay outside the menu closes it with the same animation as the close button. Overlay is full-bleed, fill gray-500 (#6B7280, verified). Figma view mode does not expose the layer opacity; use 75% (`bg-gray-500/75`, matches the visual and the Tailwind UI pattern this design is based on).
 - **4.1 Maximum width:** on larger screens the content stays in a 1280px max-width container, with empty space on both sides.
 
 ## Copy

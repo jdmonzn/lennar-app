@@ -27,6 +27,8 @@ Tailwind v4's default palette uses OKLCH values that do NOT exactly match the sp
   --color-indigo-400: #818cf8;
   --color-indigo-500: #6366f1;
   --color-indigo-600: #4f46e5;
+  --color-indigo-700: #4338ca;
+  --color-indigo-300: #a5b4fc;
 }
 ```
 
@@ -37,7 +39,7 @@ Tailwind v4's default palette uses OKLCH values that do NOT exactly match the sp
 | Mobile | 376px | base | single column, stacked form, hamburger menu, illustration below content |
 | Tablet | 834px | `md:` (≥768) | two columns, full horizontal nav, container flush to edges |
 | Laptop | 1080px | `lg:` (≥1024) | two columns of 492px, horizontal form, centered container |
-| Desktop | 1358px | `xl:` (≥1280) | inner container max 1280px, 39px side padding, two columns of 592px |
+| Desktop | 1358px | `xl:` (≥1280) | inner container max 1280px centered (39px gutters come from mx-auto), 32px padding, two columns of 592px |
 
 - The layout must also look correct between frames, not only at the exact frame widths.
 - Verify at 376, 834, 1080 and 1358 against Figma before calling any UI task done.

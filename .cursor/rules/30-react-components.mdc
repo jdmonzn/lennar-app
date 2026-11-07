@@ -18,7 +18,7 @@ alwaysApply: false
 - `Button`: `variant: 'primary' | 'secondary' | 'menuCta'` (primary = indigo-500 submit, secondary = gray-600 nav, menuCta = indigo-600), `size: 'md' | 'lg'` (md = 42px nav, lg = 48px), `fullWidth?: boolean`, `isLoading?: boolean`, plus native button attributes except `className` and `style`. `type` defaults to `'button'`. While loading: `aria-busy`, disabled, label preserved.
 - `Text`: `as` restricted to a union of intrinsic tags (`'h1' | 'h2' | 'p' | 'span'`), `variant: 'display' | 'bodyLarge' | 'body' | 'nav' | 'helper' | 'badge'`. Responsive sizes live inside the variant map; callers never pass font classes.
 - `TextInput`: required `label` (`isLabelHidden?: boolean` renders it with `VisuallyHidden`), `error?: string`, native input attributes except `className`/`style`. Generates ids with `useId`; wires `aria-invalid` and `aria-describedby` to the error.
-- `Container`: max-width 1280px, centered, 39px side padding on desktop (see spec for other breakpoints).
+- `Container`: `max-w-[1280px] mx-auto w-full`, side padding 16px on mobile and 32px from `md` up. The 39px desktop gutter comes from `mx-auto`, not padding.
 - Icons: each SVG from `src/assets/icons` becomes a TSX component in `src/ui/icons`, with `fill`/`stroke` replaced by `currentColor`, `aria-hidden="true"` by default, and an optional `title` that makes it labeled. Never redraw or substitute an icon.
 - Variant styling uses typed maps: `const VARIANT_CLASSES: Record<ButtonVariant, string> = { ... }`, combined with the `cn` helper.
 
