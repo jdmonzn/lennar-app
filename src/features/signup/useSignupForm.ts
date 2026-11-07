@@ -1,4 +1,4 @@
-import { useEffect, useState, type SubmitEvent } from 'react';
+import { useEffect, useRef, useState, type SubmitEvent } from 'react';
 import { EmailAddress, type EmailValidationError } from '../../domain/signup/EmailAddress';
 import type { SignupService } from '../../domain/signup/SignupService';
 import type { SignupFormStatus } from '../../domain/signup/signupTypes';
@@ -22,6 +22,7 @@ export function useSignupForm(service: SignupService): SignupForm {
   const [fieldError, setFieldError] = useState<EmailValidationError | null>(null);
   const [status, setStatus] = useState<SignupFormStatus>({ status: 'idle' });
   const [controller, setController] = useState<AbortController | null>(null);
+  const isSubmittingRef = useRef(false);
 
   useEffect(
     () => () => {
@@ -40,7 +41,7 @@ export function useSignupForm(service: SignupService): SignupForm {
   };
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (status.status === 'submitting') return;
+    if (isSubmittingRef.current) return;
 
     const emailResult = EmailAddress.create(email);
     if (!emailResult.ok) {
@@ -48,6 +49,7 @@ export function useSignupForm(service: SignupService): SignupForm {
       return;
     }
 
+    isSubmittingRef.current = true;
     const requestController = new AbortController();
     setController(requestController);
     setStatus({ status: 'submitting' });
@@ -65,6 +67,9 @@ export function useSignupForm(service: SignupService): SignupForm {
       .catch(() => {
         if (requestController.signal.aborted) return;
         setStatus({ status: 'error', error: { kind: 'network' } });
+      })
+      .finally(() => {
+        isSubmittingRef.current = false;
       });
   };
   return {
