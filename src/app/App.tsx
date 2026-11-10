@@ -4,9 +4,13 @@ import { Hero } from '../features/hero/Hero';
 import { NavBar } from '../features/navigation/NavBar';
 import { SignupForm } from '../features/signup/SignupForm';
 import { SignupServiceProvider } from '../features/signup/SignupServiceContext';
-import { MockSignupService } from '../infrastructure/mock/MockSignupService';
+import { GraphQLSignupService } from '../infrastructure/graphql/GraphQLSignupService';
 
-const signupService = new MockSignupService();
+const DEFAULT_GRAPHQL_ENDPOINT = 'https://graphqlzero.almansi.me/api';
+
+const signupService = new GraphQLSignupService(
+  import.meta.env.VITE_GRAPHQL_ENDPOINT ?? DEFAULT_GRAPHQL_ENDPOINT,
+);
 
 /** Composition root: picks the concrete `SignupService` and hands copy down to the page sections. */
 export function App(): ReactElement {
